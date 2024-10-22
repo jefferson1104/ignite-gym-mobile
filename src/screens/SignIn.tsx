@@ -1,4 +1,6 @@
 import { VStack, Image, Center, Text, Heading, ScrollView } from '@gluestack-ui/themed';
+import { useNavigation } from '@react-navigation/native';
+import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
 import BackgroundImage from '@assets/background.png';
 import Logo from '@assets/logo.svg';
@@ -7,13 +9,21 @@ import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 
 export function SignIn() {
+  // Hooks
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  // Methods
+  function handleSignUp() {
+    navigation.navigate('SignUp');
+  }
+
   // Renders
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <VStack flex={1} bg="$gray700">
+      <VStack flex={1}>
         <Image
           source={BackgroundImage}
           defaultSource={BackgroundImage}
@@ -48,7 +58,11 @@ export function SignIn() {
             <Text color="$gray100" fontSize="$sm" fontFamily='$body' mb="$3">
               Are you not registered?
             </Text>
-            <Button title='Sign Up' variant='outline' />
+            <Button
+              title='Sign Up'
+              variant='outline'
+              onPress={handleSignUp}
+            />
           </Center>
         </VStack>
       </VStack>
