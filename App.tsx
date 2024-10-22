@@ -1,7 +1,10 @@
-import { View, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { useFonts, Roboto_700Bold, Roboto_400Regular } from '@expo-google-fonts/roboto';
 import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed';
+
 import { config } from './config/gluestack-ui.config';
+
+import { Loading } from '@components/Loading';
 
 export default function App() {
   // Hooks
@@ -16,7 +19,7 @@ export default function App() {
             <Text color='$gray100'>Home</Text>
           </Center>
         ) : (
-          <View />
+          <Loading />
         )
       }
     </GluestackUIProvider>
