@@ -1,5 +1,4 @@
 import { Heading, HStack, Text, VStack, Icon } from "@gluestack-ui/themed";
-
 import { LogOut } from 'lucide-react-native';
 
 import { UserPhoto } from "./UserPhoto";
