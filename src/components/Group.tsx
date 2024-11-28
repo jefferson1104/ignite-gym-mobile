@@ -10,6 +10,7 @@ export function Group({ name, isActive, ...rest }: GroupProps) {
   // Renders
   return (
     <Button
+      mr="$3"
       minWidth="$24"
       h="$10"
       bg="$gray600"
