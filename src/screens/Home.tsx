@@ -4,16 +4,19 @@ import { Heading, HStack, VStack, Text } from "@gluestack-ui/themed";
 
 import { HomeHeader } from "@components/HomeHeader";
 import { Group } from "@components/Group";
+import { ExerciseCard } from "@components/ExerciseCard";
 
 export function Home() {
+  // States
+  const [groupSelected, setGroupSelected] = useState("Back");
   const [groups, setGroups] = useState([
-    "Costas",
+    "Back",
     "Biceps",
     "Triceps",
-    "Ombro",
+    "Shoulder",
   ]);
-  const [groupSelected, setGroupSelected] = useState("Costas");
 
+  // Renders
   return (
     <VStack flex={1}>
       <HomeHeader />
@@ -37,12 +40,14 @@ export function Home() {
       <VStack px="$8">
         <HStack justifyContent="space-between" alignItems="center" mb="$5">
           <Heading color="$gray200" fontSize="$md" fontFamily="$heading">
-            Exercícios
+            Exercises
           </Heading>
           <Text color="$gray200" fontSize="$sm" fontFamily="$body">
             4
           </Text>
         </HStack>
+
+        <ExerciseCard />
       </VStack>
     </VStack>
   );
