@@ -15,7 +15,7 @@ export function History() {
   // Renders
   return (
     <VStack flex={1}>
-      <ScreenHeader title="History" />
+      <ScreenHeader title="Exercises History" />
 
       <SectionList
         sections={exercises}
