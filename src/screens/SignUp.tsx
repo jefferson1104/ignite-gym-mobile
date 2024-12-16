@@ -1,20 +1,54 @@
-import { VStack, Image, Center, Text, Heading, ScrollView } from '@gluestack-ui/themed';
-import { useNavigation } from '@react-navigation/native';
-import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
+import {
+  VStack,
+  Image,
+  Center,
+  Text,
+  Heading,
+  ScrollView,
+} from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { useForm, Controller } from "react-hook-form";
 
-import BackgroundImage from '@assets/background.png';
-import Logo from '@assets/logo.svg';
+import BackgroundImage from "@assets/background.png";
+import Logo from "@assets/logo.svg";
 
-import { Input } from '@components/Input';
-import { Button } from '@components/Button';
+import { Input } from "@components/Input";
+import { Button } from "@components/Button";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
 
 export function SignUp() {
   // Hooks
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>();
 
   // Methods
   function handleGoBack() {
-    navigation.navigate('SignIn');
+    navigation.navigate("SignIn");
+  }
+
+  function handleSignUp({
+    name,
+    email,
+    password,
+    password_confirm,
+  }: FormDataProps) {
+    console.log("DATA", {
+      name,
+      email,
+      password,
+      password_confirm,
+    });
   }
 
   // Renders
@@ -27,10 +61,10 @@ export function SignUp() {
         <Image
           source={BackgroundImage}
           defaultSource={BackgroundImage}
-          alt='People training in the gym'
+          alt="People training in the gym"
           w="$full"
           h={624}
-          position='absolute'
+          position="absolute"
         />
         <VStack flex={1} px="$10" pb="$16">
           <Center my="$24">
@@ -40,23 +74,72 @@ export function SignUp() {
             </Text>
           </Center>
           <Center gap="$2" flex={1}>
-            <Heading color="$gray100">
-              Create your account
-            </Heading>
-            <Input placeholder='Name' />
-            <Input
-              placeholder='E-mail'
-              keyboardType='email-address'
-              autoCapitalize='none'
+            <Heading color="$gray100">Create your account</Heading>
+
+            <Controller
+              control={control}
+              name="name"
+              rules={{ required: "Name is required" }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Full name"
+                  autoCorrect={false}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
             />
-            <Input
-              placeholder='Password'
-              secureTextEntry
+            {errors.name?.message && (
+              <Text color="$white">{errors.name.message}</Text>
+            )}
+
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
             />
-            <Button title='Create' />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Password"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password_confirm"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Confirm password"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  onSubmitEditing={handleSubmit(handleSignUp)}
+                  returnKeyType="send"
+                />
+              )}
+            />
+
+            <Button title="Create" onPress={handleSubmit(handleSignUp)} />
           </Center>
           <Button
-            title='Back to Sign In'
+            title="Back to Sign In"
             variant="outline"
             mt="$12"
             onPress={handleGoBack}
