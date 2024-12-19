@@ -9,6 +9,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import BackgroundImage from "@assets/background.png";
 import Logo from "@assets/logo.svg";
@@ -23,6 +25,19 @@ type FormDataProps = {
   password_confirm: string;
 };
 
+const signUpSchema = yup.object({
+  name: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid e-mail").required("E-mail is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must have at least 6 characters"),
+  password_confirm: yup
+    .string()
+    .required("Password confirmation is required")
+    .oneOf([yup.ref("password"), ""], "Passwords must match"),
+});
+
 export function SignUp() {
   // Hooks
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
@@ -30,7 +45,9 @@ export function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataProps>();
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  });
 
   // Methods
   function handleGoBack() {
@@ -79,7 +96,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="name"
-              rules={{ required: "Name is required" }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Full name"
@@ -94,13 +110,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="email"
-              rules={{
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid e-mail",
-                },
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="E-mail"
@@ -123,6 +132,7 @@ export function SignUp() {
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -138,6 +148,7 @@ export function SignUp() {
                   value={value}
                   onSubmitEditing={handleSubmit(handleSignUp)}
                   returnKeyType="send"
+                  errorMessage={errors.password_confirm?.message}
                 />
               )}
             />
