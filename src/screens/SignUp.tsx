@@ -17,6 +17,7 @@ import Logo from "@assets/logo.svg";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { api } from "@services/api";
 
 type FormDataProps = {
   name: string;
@@ -54,18 +55,19 @@ export function SignUp() {
     navigation.navigate("SignIn");
   }
 
-  function handleSignUp({
+  async function handleSignUp({
     name,
     email,
     password,
     password_confirm,
   }: FormDataProps) {
-    console.log("DATA", {
-      name,
-      email,
-      password,
-      password_confirm,
-    });
+    try {
+      const response = await api.post("/users", { name, email, password });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Renders
