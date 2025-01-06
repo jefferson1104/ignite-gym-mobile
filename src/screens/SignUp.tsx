@@ -5,19 +5,25 @@ import {
   Text,
   Heading,
   ScrollView,
+  useToast,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
+
+import { api } from "@services/api";
+
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import { AppError } from "@utils/app-error";
 
 import BackgroundImage from "@assets/background.png";
 import Logo from "@assets/logo.svg";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
-import { api } from "@services/api";
+import { ToastMessage } from "@components/ToastMessage";
 
 type FormDataProps = {
   name: string;
@@ -41,6 +47,7 @@ const signUpSchema = yup.object({
 
 export function SignUp() {
   // Hooks
+  const toast = useToast();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
     control,
@@ -63,10 +70,29 @@ export function SignUp() {
   }: FormDataProps) {
     try {
       const response = await api.post("/users", { name, email, password });
-
       console.log(response.data);
     } catch (error) {
-      console.error(error);
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Unable to create account, please try again later.";
+
+      const toastId = "sign-up-error";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastId}
+            title={title}
+            action="error"
+            onClose={() => toast.close(toastId)}
+          />
+        ),
+      });
+
+      console.error("Error on sign up: ", error);
     }
   }
 

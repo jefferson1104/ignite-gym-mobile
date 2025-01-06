@@ -1,3 +1,4 @@
+import { AppError } from "@utils/app-error";
 import axios from "axios";
 
 const api = axios.create({
@@ -10,7 +11,11 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    return Promise.reject(error);
+    if (error.response && error.response.data) {
+      return Promise.reject(new AppError(error.response.data.message));
+    } else {
+      return Promise.reject(error);
+    }
   }
 );
 
