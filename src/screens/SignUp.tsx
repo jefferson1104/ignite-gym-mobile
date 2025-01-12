@@ -1,3 +1,9 @@
+import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import {
   VStack,
   Image,
@@ -7,13 +13,10 @@ import {
   ScrollView,
   useToast,
 } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
-import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 import { api } from "@services/api";
+
+import { useAuth } from "@hooks/useAuth";
 
 import { AppError } from "@utils/app-error";
 
@@ -47,6 +50,7 @@ const signUpSchema = yup.object({
 export function SignUp() {
   // Hooks
   const toast = useToast();
+  const { signIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
     control,
@@ -56,20 +60,19 @@ export function SignUp() {
     resolver: yupResolver(signUpSchema),
   });
 
+  // States
+  const [isLoading, setIsLoading] = useState(false);
+
   // Methods
   function handleGoBack() {
     navigation.navigate("SignIn");
   }
 
-  async function handleSignUp({
-    name,
-    email,
-    password,
-    password_confirm,
-  }: FormDataProps) {
+  async function handleSignUp({ name, email, password }: FormDataProps) {
     try {
-      const response = await api.post("/users", { name, email, password });
-      console.log(response.data);
+      setIsLoading(true);
+      await api.post("/users", { name, email, password });
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -92,6 +95,8 @@ export function SignUp() {
       });
 
       console.error("Error on sign up: ", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -180,13 +185,18 @@ export function SignUp() {
               )}
             />
 
-            <Button title="Create" onPress={handleSubmit(handleSignUp)} />
+            <Button
+              title="Create and access"
+              onPress={handleSubmit(handleSignUp)}
+              isLoading={isLoading}
+            />
           </Center>
           <Button
             title="Back to Sign In"
             variant="outline"
             mt="$12"
             onPress={handleGoBack}
+            isLoading={isLoading}
           />
         </VStack>
       </VStack>
