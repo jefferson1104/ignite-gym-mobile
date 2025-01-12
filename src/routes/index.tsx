@@ -6,10 +6,17 @@ import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { AuthRoutes } from "./auth.routes";
 import { AppRoutes } from "./app.routes";
 
+import { useAuth } from "@hooks/useAuth";
+
 export function Routes() {
+  // Hooks
+  const { user } = useAuth();
+
   // Constants
   const theme = DefaultTheme;
   theme.colors.background = gluestackUIConfig.tokens.colors.gray700;
+
+  console.log("USER", user);
 
   // Renders
   return (
