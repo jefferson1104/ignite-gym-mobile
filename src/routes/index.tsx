@@ -8,13 +8,19 @@ import { AppRoutes } from "./app.routes";
 
 import { useAuth } from "@hooks/useAuth";
 
+import { Loading } from "@components/Loading";
+
 export function Routes() {
   // Hooks
-  const { user } = useAuth();
+  const { user, isLoadingUserStorageData } = useAuth();
 
   // Constants
   const theme = DefaultTheme;
   theme.colors.background = gluestackUIConfig.tokens.colors.gray700;
+
+  if (isLoadingUserStorageData) {
+    return <Loading />;
+  }
 
   // Renders
   return (
