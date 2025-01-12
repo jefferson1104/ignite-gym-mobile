@@ -10,11 +10,10 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { api } from "@services/api";
-
-import { yupResolver } from "@hookform/resolvers/yup";
 
 import { AppError } from "@utils/app-error";
 
