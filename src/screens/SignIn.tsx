@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   VStack,
   Image,
@@ -13,7 +14,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { api } from "@services/api";
+import { useAuth } from "@hooks/useAuth";
 
 import { AppError } from "@utils/app-error";
 
@@ -37,6 +38,7 @@ const signInSchema = yup.object({
 export function SignIn() {
   // Hooks
   const toast = useToast();
+  const { signIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
     control,
@@ -46,6 +48,9 @@ export function SignIn() {
     resolver: yupResolver(signInSchema),
   });
 
+  // States
+  const [isLoading, setIsLoading] = useState(false);
+
   // Methods
   function handleSignUp() {
     navigation.navigate("SignUp");
@@ -53,8 +58,8 @@ export function SignIn() {
 
   async function handleSignIn({ email, password }: FormDataProps) {
     try {
-      const response = await api.post("/sessions", { email, password });
-      console.log(response.data);
+      setIsLoading(true);
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -77,6 +82,8 @@ export function SignIn() {
       });
 
       console.error("Error on sign in: ", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -134,13 +141,22 @@ export function SignIn() {
                 />
               )}
             />
-            <Button title="Sign In" onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title="Sign In"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
           </Center>
           <Center flex={1} justifyContent="flex-end" mt="$4">
             <Text color="$gray100" fontSize="$sm" fontFamily="$body" mb="$3">
               Are you not registered?
             </Text>
-            <Button title="Sign Up" variant="outline" onPress={handleSignUp} />
+            <Button
+              title="Sign Up"
+              variant="outline"
+              onPress={handleSignUp}
+              isLoading={isLoading}
+            />
           </Center>
         </VStack>
       </VStack>
