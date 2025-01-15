@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Heading, HStack, VStack, Text, useToast } from "@gluestack-ui/themed";
 
 import { api } from "@services/api";
 
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
 
 import { AppError } from "@utils/app-error";
 
@@ -20,14 +22,9 @@ export function Home() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   // States
-  const [groupSelected, setGroupSelected] = useState("Back");
-  const [exercises, setExercises] = useState([
-    "Front pulldown",
-    "Bent-over row",
-    "Single-leg row",
-    "Deadlift",
-  ]);
   const [groups, setGroups] = useState<string[]>([]);
+  const [groupSelected, setGroupSelected] = useState<string>("back");
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
 
   // Methods
   function handleOpenExerciseDetails() {
@@ -66,10 +63,46 @@ export function Home() {
     }
   }
 
+  async function fetchExercisesByGroup() {
+    try {
+      const response = await api.get(`/exercises/bygroup/${groupSelected}`);
+
+      setExercises(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "It was not possible to load exercises";
+
+      const toastId = "load-exercises-error";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastId}
+            title={title}
+            action="error"
+            onClose={() => toast.close(toastId)}
+          />
+        ),
+      });
+
+      console.error("Error to load exercises: ", error);
+    }
+  }
+
   // Effects
   useEffect(() => {
     fetchGroups();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExercisesByGroup();
+    }, [groupSelected])
+  );
 
   // Renders
   return (
@@ -106,9 +139,9 @@ export function Home() {
           data={exercises}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ExerciseCard onPress={handleOpenExerciseDetails} />
+            <ExerciseCard onPress={handleOpenExerciseDetails} data={item} />
           )}
         />
       </VStack>
