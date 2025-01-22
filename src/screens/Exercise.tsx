@@ -41,6 +41,7 @@ export function Exercise() {
 
   // States
   const [isLoading, setIsLoading] = useState(true);
+  const [submitingRegister, setSubmitingRegister] = useState(false);
   const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
 
   // Constants
@@ -86,6 +87,54 @@ export function Exercise() {
     }
   }
 
+  async function handleExerciseHistoryRegister() {
+    try {
+      setSubmitingRegister(true);
+
+      await api.post("/history", { exercise_id: exerciseId });
+
+      const toastId = "register-exercise-success";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastId}
+            title="Congratulations! Exercise registered in your history"
+            action="success"
+            onClose={() => toast.close(toastId)}
+          />
+        ),
+      });
+
+      navigation.navigate("history");
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "It was not possible to register this exercise in your history";
+
+      const toastId = "load-exercise-details-error";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastId}
+            title={title}
+            action="error"
+            onClose={() => toast.close(toastId)}
+          />
+        ),
+      });
+
+      console.error("Error to register exercise: ", error);
+    } finally {
+      setSubmitingRegister(false);
+    }
+  }
+
   //Effects
   useEffect(() => {
     fetchExerciseDetails();
@@ -121,9 +170,9 @@ export function Exercise() {
         </HStack>
       </VStack>
 
-      {isLoading ? (
-        <Loading />
-      ) : (
+      {isLoading && <Loading />}
+
+      {!isLoading && (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32 }}
@@ -162,7 +211,11 @@ export function Exercise() {
                   </Text>
                 </HStack>
               </HStack>
-              <Button title="Mark as done" />
+              <Button
+                title="Mark as done"
+                isLoading={submitingRegister}
+                onPress={handleExerciseHistoryRegister}
+              />
             </Box>
           </VStack>
         </ScrollView>
