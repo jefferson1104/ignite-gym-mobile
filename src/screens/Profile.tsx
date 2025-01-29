@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Center, Heading, Text, useToast, VStack } from "@gluestack-ui/themed";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,12 +7,18 @@ import * as yup from "yup";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
+import { api } from "@services/api";
+
+import { useAuth } from "@hooks/useAuth";
+
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { ToastMessage } from "@components/ToastMessage";
-import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/app-error";
+
+const PHOTO_SIZE = 33;
 
 type FormDataProps = {
   name: string;
@@ -48,7 +54,7 @@ const profileSchema = yup.object({
 export function Profile() {
   // Hooks
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const {
     control,
     handleSubmit,
@@ -62,6 +68,8 @@ export function Profile() {
   });
 
   // States
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/jefferson1104.png"
   );
@@ -69,6 +77,8 @@ export function Profile() {
   // Methods
   async function handleUserPhotoSelect() {
     try {
+      setPhotoIsLoading(true);
+
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
@@ -106,14 +116,59 @@ export function Profile() {
       }
     } catch (error) {
       console.error("Change user photo error:", error);
+    } finally {
+      setPhotoIsLoading(false);
     }
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
     try {
-      console.log(data);
+      setIsUpdating(true);
+
+      const userUpdated = user;
+      userUpdated.name = data.name;
+
+      await api.put("/users", data);
+
+      await updateUserProfile(userUpdated);
+
+      const toastIdSuccess = "update-profile-sucess";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastIdSuccess}
+            title="Profile updated successfully"
+            action="success"
+            onClose={() => toast.close(toastIdSuccess)}
+          />
+        ),
+      });
     } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Update profile error. Please try again.";
+
+      const toastIdError = "update-profile-error";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastIdError}
+            title={title}
+            action="error"
+            onClose={() => toast.close(toastIdError)}
+          />
+        ),
+      });
+
       console.error("Profile update error:", error);
+    } finally {
+      setIsUpdating(false);
     }
   }
 
@@ -124,7 +179,34 @@ export function Profile() {
 
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
-          <UserPhoto source={{ uri: userPhoto }} alt="User photo" size="xl" />
+          {photoIsLoading ? (
+            <Center w="$full">
+              <View
+                style={{
+                  width: 126,
+                  height: 126,
+                  borderWidth: 2,
+                  borderRadius: 100,
+                  borderColor: "#ccc",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 4,
+                }}
+              >
+                <Text
+                  color="$gray200"
+                  textAlign="center"
+                  fontFamily="$heading"
+                  fontSize="$md"
+                >
+                  Loading photo...
+                </Text>
+              </View>
+            </Center>
+          ) : (
+            <UserPhoto source={{ uri: userPhoto }} alt="User photo" size="xl" />
+          )}
+
           <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color="$green500"
@@ -222,6 +304,7 @@ export function Profile() {
 
             <Button
               title="Update"
+              isLoading={isUpdating}
               onPress={handleSubmit(handleProfileUpdate)}
             />
           </Center>
