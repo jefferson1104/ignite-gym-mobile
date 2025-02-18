@@ -2,6 +2,8 @@ import { TouchableOpacity } from "react-native";
 import { LogOut } from "lucide-react-native";
 import { Heading, HStack, Text, VStack, Icon } from "@gluestack-ui/themed";
 
+import { api } from "@services/api";
+
 import { useAuth } from "@hooks/useAuth";
 
 import defaultUserAvatar from "@assets/userPhotoDefault.png";
@@ -16,7 +18,11 @@ export function HomeHeader() {
   return (
     <HStack bg="$gray600" pt="$16" pb="$5" px="$8" alignItems="center" gap="$4">
       <UserPhoto
-        source={user.avatar ? { uri: user.avatar } : defaultUserAvatar}
+        source={
+          user.avatar
+            ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+            : defaultUserAvatar
+        }
         alt="User photo"
         w="$16"
         h="$16"

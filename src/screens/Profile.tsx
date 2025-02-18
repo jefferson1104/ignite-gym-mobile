@@ -10,15 +10,15 @@ import * as FileSystem from "expo-file-system";
 import { api } from "@services/api";
 
 import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/app-error";
+
+import defaultUserAvatar from "@assets/userPhotoDefault.png";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { ToastMessage } from "@components/ToastMessage";
-import { AppError } from "@utils/app-error";
-
-const PHOTO_SIZE = 33;
 
 type FormDataProps = {
   name: string;
@@ -70,9 +70,6 @@ export function Profile() {
   // States
   const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(
-    "https://github.com/jefferson1104.png"
-  );
 
   // Methods
   async function handleUserPhotoSelect() {
@@ -84,15 +81,14 @@ export function Profile() {
         quality: 1,
         aspect: [4, 4],
         allowsEditing: true,
-        base64: true,
       });
 
       if (photoSelected.canceled) return;
 
-      const photoURI = photoSelected.assets[0].uri;
+      const photo = photoSelected.assets[0];
 
-      if (photoURI) {
-        const photoInfo = (await FileSystem.getInfoAsync(photoURI)) as {
+      if (photo.uri) {
+        const photoInfo = (await FileSystem.getInfoAsync(photo.uri)) as {
           size: number;
         };
 
@@ -112,10 +108,67 @@ export function Profile() {
           });
         }
 
-        setUserPhoto(photoURI);
+        const fileExtension = photo.uri.split(".").pop();
+
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`.toLocaleLowerCase(),
+          uri: photo.uri,
+          type: photo.mimeType,
+        } as any;
+
+        const userPhotoUploadForm = new FormData();
+        userPhotoUploadForm.append("avatar", photoFile);
+
+        const avatarUpdatedResponse = await api.patch(
+          "/users/avatar",
+          userPhotoUploadForm,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const toastIdSuccess = "update-avatar-success";
+
+        const userUpdated = user;
+        userUpdated.avatar = avatarUpdatedResponse.data.avatar;
+        updateUserProfile(userUpdated);
+
+        toast.show({
+          placement: "top",
+          render: () => (
+            <ToastMessage
+              id={toastIdSuccess}
+              title="Avatar updated successfully"
+              action="success"
+              onClose={() => toast.close(toastIdSuccess)}
+            />
+          ),
+        });
       }
     } catch (error) {
-      console.error("Change user photo error:", error);
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Update avatar error. Please try again.";
+
+      const toastIdError = "update-avatar-error";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <ToastMessage
+            id={toastIdError}
+            title={title}
+            action="error"
+            onClose={() => toast.close(toastIdError)}
+          />
+        ),
+      });
+
+      console.error("Update avatar user error: ", error);
     } finally {
       setPhotoIsLoading(false);
     }
@@ -132,7 +185,7 @@ export function Profile() {
 
       await updateUserProfile(userUpdated);
 
-      const toastIdSuccess = "update-profile-sucess";
+      const toastIdSuccess = "update-profile-success";
 
       toast.show({
         placement: "top",
@@ -204,7 +257,15 @@ export function Profile() {
               </View>
             </Center>
           ) : (
-            <UserPhoto source={{ uri: userPhoto }} alt="User photo" size="xl" />
+            <UserPhoto
+              source={
+                user.avatar
+                  ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                  : defaultUserAvatar
+              }
+              alt="User photo"
+              size="xl"
+            />
           )}
 
           <TouchableOpacity onPress={handleUserPhotoSelect}>
