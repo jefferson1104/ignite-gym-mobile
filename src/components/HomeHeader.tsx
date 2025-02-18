@@ -30,7 +30,7 @@ export function HomeHeader() {
 
       <VStack flex={1}>
         <Text color="$gray100" fontSize="$sm">
-          Hello,
+          Olá,
         </Text>
         <Heading color="$gray100" fontSize="$md">
           {user.name}

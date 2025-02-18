@@ -99,8 +99,8 @@ export function Profile() {
             render: ({ id }) => (
               <ToastMessage
                 id={id}
-                title="Image too large"
-                description="Please select an image smaller than 5MB."
+                title="Imagem muito grande"
+                description="Por favor, selecione uma imagem menor que 5MB."
                 action="error"
                 onClose={() => toast.close(id)}
               />
@@ -140,7 +140,7 @@ export function Profile() {
           render: () => (
             <ToastMessage
               id={toastIdSuccess}
-              title="Avatar updated successfully"
+              title="Avatar atualizado com sucesso"
               action="success"
               onClose={() => toast.close(toastIdSuccess)}
             />
@@ -152,7 +152,7 @@ export function Profile() {
 
       const title = isAppError
         ? error.message
-        : "Update avatar error. Please try again.";
+        : "Atualizar erro de avatar. Por favor, tente novamente.";
 
       const toastIdError = "update-avatar-error";
 
@@ -203,7 +203,7 @@ export function Profile() {
 
       const title = isAppError
         ? error.message
-        : "Update profile error. Please try again.";
+        : "Erro ao atualizar perfil. Por favor, tente novamente.";
 
       const toastIdError = "update-profile-error";
 

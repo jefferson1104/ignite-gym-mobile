@@ -65,7 +65,7 @@ export function Exercise() {
 
       const title = isAppError
         ? error.message
-        : "It was not possible to load this exercise details";
+        : "Não foi possível carregar os detalhes deste exercício";
 
       const toastId = "load-exercise-details-error";
 
@@ -100,7 +100,7 @@ export function Exercise() {
         render: () => (
           <ToastMessage
             id={toastId}
-            title="Congratulations! Exercise registered in your history"
+            title="Parabéns! Exercício registrado no seu histórico"
             action="success"
             onClose={() => toast.close(toastId)}
           />
@@ -113,7 +113,7 @@ export function Exercise() {
 
       const title = isAppError
         ? error.message
-        : "It was not possible to register this exercise in your history";
+        : "Não foi possível registrar este exercício no seu histórico";
 
       const toastId = "load-exercise-details-error";
 
@@ -201,18 +201,18 @@ export function Exercise() {
                 <HStack alignItems="center">
                   <SeriesSvg />
                   <Text color="$gray200" ml="$2">
-                    {exercise.series} sets
+                    {exercise.series} séries
                   </Text>
                 </HStack>
                 <HStack alignItems="center">
                   <RepetitionsSvg />
                   <Text color="$gray200" ml="$2">
-                    {exercise.repetitions} reps
+                    {exercise.repetitions} repetições
                   </Text>
                 </HStack>
               </HStack>
               <Button
-                title="Mark as done"
+                title="Marcar como realizado"
                 isLoading={submitingRegister}
                 onPress={handleExerciseHistoryRegister}
               />

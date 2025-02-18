@@ -25,7 +25,7 @@ export function Home() {
   // States
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<string[]>([]);
-  const [groupSelected, setGroupSelected] = useState<string>("back");
+  const [groupSelected, setGroupSelected] = useState<string>("bíceps");
   const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
 
   // Methods
@@ -45,7 +45,7 @@ export function Home() {
 
       const title = isAppError
         ? error.message
-        : "It was not possible to load groups";
+        : "Não foi possível carregar grupos";
 
       const toastId = "load-groups-error";
 
@@ -77,7 +77,7 @@ export function Home() {
 
       const title = isAppError
         ? error.message
-        : "It was not possible to load exercises";
+        : "Não foi possível carregar exercícios";
 
       const toastId = "load-exercises-error";
 
@@ -137,7 +137,7 @@ export function Home() {
         <VStack px="$8" flex={1}>
           <HStack justifyContent="space-between" alignItems="center" mb="$5">
             <Heading color="$gray200" fontSize="$md" fontFamily="$heading">
-              Exercises
+              Exercícios
             </Heading>
             <Text color="$gray200" fontSize="$sm" fontFamily="$body">
               {exercises.length}

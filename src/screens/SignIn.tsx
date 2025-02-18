@@ -65,7 +65,7 @@ export function SignIn() {
 
       const title = isAppError
         ? error.message
-        : "Unable to sign in, please try again later.";
+        : "Não é possível entrar, por favor tente novamente mais tarde.";
 
       const toastId = "sign-in-error";
 

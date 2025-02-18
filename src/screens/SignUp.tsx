@@ -78,7 +78,7 @@ export function SignUp() {
 
       const title = isAppError
         ? error.message
-        : "Unable to create account, please try again later.";
+        : "Não é possível criar uma conta, por favor tente novamente mais tarde.";
 
       const toastId = "sign-up-error";
 

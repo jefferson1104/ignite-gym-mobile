@@ -45,7 +45,7 @@ export function ExerciseCard({ data, ...rest }: Props) {
             {data.name}
           </Heading>
           <Text fontSize="$sm" color="$gray200" mt="$1" numberOfLines={2}>
-            {data.series} sets x {data.repetitions} reps
+            {data.series} séries x {data.repetitions} repetições
           </Text>
         </VStack>
         <Icon as={ChevronRight} color="$gray300" />
