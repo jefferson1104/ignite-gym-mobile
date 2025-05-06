@@ -110,7 +110,7 @@ export function SignIn() {
             </Text>
           </Center>
           <Center gap="$2">
-            <Heading color="$gray100">Access your account</Heading>
+            <Heading color="$gray100">Acesse sua conta</Heading>
 
             <Controller
               control={control}
@@ -133,7 +133,7 @@ export function SignIn() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Password"
+                  placeholder="Senha"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -142,17 +142,17 @@ export function SignIn() {
               )}
             />
             <Button
-              title="Sign In"
+              title="Acessar"
               onPress={handleSubmit(handleSignIn)}
               isLoading={isLoading}
             />
           </Center>
           <Center flex={1} justifyContent="flex-end" mt="$4">
             <Text color="$gray100" fontSize="$sm" fontFamily="$body" mb="$3">
-              Are you not registered?
+              Você não tem uma conta?
             </Text>
             <Button
-              title="Sign Up"
+              title="Cadastre-se"
               variant="outline"
               onPress={handleSignUp}
               isLoading={isLoading}

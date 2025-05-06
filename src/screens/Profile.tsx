@@ -252,7 +252,7 @@ export function Profile() {
                   fontFamily="$heading"
                   fontSize="$md"
                 >
-                  Loading photo...
+                  Carregando...
                 </Text>
               </View>
             </Center>
@@ -276,7 +276,7 @@ export function Profile() {
               mt="$2"
               mb="$8"
             >
-              Change Photo
+              Alterar Imagem
             </Text>
           </TouchableOpacity>
 
@@ -318,7 +318,7 @@ export function Profile() {
             mt="$8"
             mb="$2"
           >
-            Change Password
+            Alterar senha
           </Heading>
 
           <Center w="$full" gap="$4">
@@ -328,7 +328,7 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   bg="$gray600"
-                  placeholder="Old password"
+                  placeholder="Senha antiga"
                   onChangeText={onChange}
                   secureTextEntry
                 />
@@ -341,7 +341,7 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   bg="$gray600"
-                  placeholder="New password"
+                  placeholder="Nova senha"
                   onChangeText={onChange}
                   secureTextEntry
                   errorMessage={errors.password?.message}
@@ -355,7 +355,7 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   bg="$gray600"
-                  placeholder="Confirm new password"
+                  placeholder="Confirmar nova senha"
                   onChangeText={onChange}
                   secureTextEntry
                   errorMessage={errors.confirm_password?.message}
@@ -364,7 +364,7 @@ export function Profile() {
             />
 
             <Button
-              title="Update"
+              title="Atualizar"
               isLoading={isUpdating}
               onPress={handleSubmit(handleProfileUpdate)}
             />

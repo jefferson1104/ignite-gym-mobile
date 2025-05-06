@@ -123,14 +123,14 @@ export function SignUp() {
             </Text>
           </Center>
           <Center gap="$2" flex={1}>
-            <Heading color="$gray100">Create your account</Heading>
+            <Heading color="$gray100">Faça seu cadastro</Heading>
 
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Full name"
+                  placeholder="Nome completo"
                   autoCorrect={false}
                   onChangeText={onChange}
                   value={value}
@@ -160,7 +160,7 @@ export function SignUp() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Password"
+                  placeholder="Senha"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -174,7 +174,7 @@ export function SignUp() {
               name="password_confirm"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Confirm password"
+                  placeholder="Confirmar senha"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -186,13 +186,13 @@ export function SignUp() {
             />
 
             <Button
-              title="Create and access"
+              title="Cadastrar e acessar"
               onPress={handleSubmit(handleSignUp)}
               isLoading={isLoading}
             />
           </Center>
           <Button
-            title="Back to Sign In"
+            title="Voltar para o login"
             variant="outline"
             mt="$12"
             onPress={handleGoBack}
